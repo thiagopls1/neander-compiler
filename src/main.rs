@@ -5,6 +5,13 @@ use std::{fs, io::ErrorKind, process};
 
 use clap::Parser;
 use cli_args::Args;
+use colored::*;
+
+macro_rules! print_err {
+    ($($arg:tt)*) => {
+        eprintln!("{}", format!($($arg)*).red().bold());
+    };
+}
 
 fn main() {
     let args = Args::parse();
@@ -13,15 +20,15 @@ fn main() {
         Ok(content) => content,
         Err(err) => match err.kind() {
             ErrorKind::NotFound => {
-                eprintln!("ERRO: Arquivo não encontrado!");
+                print_err!("ERRO: Arquivo {} não encontrado!", args.file_path);
                 process::exit(1);
             }
             ErrorKind::IsADirectory => {
-                eprintln!("ERRO: O caminho passado é um diretório!");
+                print_err!("ERRO: O caminho {} é um diretório!", args.file_path);
                 process::exit(1);
             }
             _ => {
-                eprintln!("ERRO: Não foi possível ler o arquivo!");
+                print_err!("ERRO: Não foi possível ler o arquivo!");
                 process::exit(1);
             }
         },
