@@ -15,6 +15,10 @@ fn main() {
                 eprintln!("ERRO: Arquivo não encontrado!");
                 process::exit(1);
             }
+            ErrorKind::IsADirectory => {
+                eprintln!("ERRO: O caminho passado é um diretório!");
+                process::exit(1);
+            }
             _ => {
                 eprintln!("ERRO: Não foi possível ler o arquivo!");
                 process::exit(1);
