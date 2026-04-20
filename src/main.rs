@@ -1,14 +1,15 @@
+pub mod cli_args;
 pub mod tokens;
 
-use std::{env, fs, io::ErrorKind, process};
+use std::{fs, io::ErrorKind, process};
+
+use clap::Parser;
+use cli_args::Args;
 
 fn main() {
-    let src_code_path = env::args().nth(1).unwrap_or_else(|| {
-        eprintln!("ERRO: É necessário passar o caminho do arquivo de código-fonte!");
-        process::exit(1);
-    });
+    let args = Args::parse();
 
-    let ndr_code = match fs::read_to_string(&src_code_path) {
+    let ndr_code = match fs::read_to_string(&args.file_path) {
         Ok(content) => content,
         Err(err) => match err.kind() {
             ErrorKind::NotFound => {
