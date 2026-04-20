@@ -1,3 +1,5 @@
+pub mod tokens;
+
 use std::{env, fs, io::ErrorKind, process};
 
 fn main() {
