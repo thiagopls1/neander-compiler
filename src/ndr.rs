@@ -15,17 +15,14 @@ pub enum TokenKind {
 }
 
 #[derive(Debug)]
-pub struct Token {
+pub struct Token<'a> {
     kind: TokenKind,
-    value: String,
+    value: &'a str,
 }
 
-impl Token {
-    pub fn new(value: &str, kind: TokenKind) -> Token {
-        return Token {
-            kind,
-            value: String::from(value),
-        };
+impl<'a> Token<'a> {
+    pub fn new(value: &'a str, kind: TokenKind) -> Token<'a> {
+        return Token { kind, value };
     }
 }
 
@@ -40,23 +37,14 @@ fn is_variable(token: &str) -> bool {
 
 pub fn tokenize(s: &str) -> Result<Vec<Token>, ()> {
     let mut tokens: Vec<Token> = vec![];
-    let code_lines: Vec<&str> = s.lines().collect();
-
-    for line in code_lines {
-        let line_words: Vec<&str> = line.split_whitespace().collect();
-
-        let mut comment_flag = false;
-        for word in line_words {
-            if comment_flag {
-                continue;
-            }
-
+    for line in s.lines() {
+        for word in line.split_whitespace() {
             match word {
                 "PROGRAMA" => tokens.push(Token::new(word, TokenKind::ProgramStart)),
                 "FIM_PROGRAMA" => tokens.push(Token::new(word, TokenKind::ProgramEnd)),
                 "#" => {
                     tokens.push(Token::new(word, TokenKind::Comment));
-                    comment_flag = true;
+                    break;
                 }
                 "VAR" => tokens.push(Token::new(word, TokenKind::DeclareVariable)),
                 "=" => tokens.push(Token::new(word, TokenKind::AssignVariable)),
@@ -68,12 +56,12 @@ pub fn tokenize(s: &str) -> Result<Vec<Token>, ()> {
                     tokens.push(Token::new(word, TokenKind::Number))
                 }
                 _ if is_variable(word) => tokens.push(Token::new(word, TokenKind::Variable)),
-                _ => continue,
+                _ => return Err(()),
             }
         }
 
         tokens.push(Token::new("\n", TokenKind::NewLine));
     }
 
-    return Ok(tokens);
+    Ok(tokens)
 }
