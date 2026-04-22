@@ -1,5 +1,5 @@
 pub mod cli_args;
-pub mod tokens;
+pub mod ndr_tokens;
 
 use std::{fs, io::ErrorKind, process};
 
@@ -34,6 +34,8 @@ fn main() {
         },
     };
 
+    let tokens_vec = ndr_tokens::gen_neander_code_tokens(&ndr_code).unwrap_or(vec![]);
     println!("{}", ndr_code);
+    println!("{:?}", tokens_vec);
     process::exit(0);
 }
