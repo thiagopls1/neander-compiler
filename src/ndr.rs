@@ -23,7 +23,7 @@ fn is_variable(token: &str) -> bool {
     }
 }
 
-pub fn gen_neander_code_tokens(s: &str) -> Result<Vec<NeanderCodeToken>, ()> {
+pub fn tokenize(s: &str) -> Result<Vec<NeanderCodeToken>, ()> {
     let mut tokens: Vec<NeanderCodeToken> = vec![];
     let code_lines: Vec<&str> = s.lines().collect();
 
