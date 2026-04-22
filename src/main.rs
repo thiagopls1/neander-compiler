@@ -1,15 +1,15 @@
-pub mod cli_args;
+pub mod cli;
 pub mod ndr;
 
 use std::{fs, io::ErrorKind, process};
 
 use clap::Parser;
-use cli_args::Args;
+use cli::Args;
 use colored::*;
 
 macro_rules! print_err {
     ($($arg:tt)*) => {
-        eprintln!("{}", format!($($arg)*).red().bold());
+        eprintln!("{} {}", "error:".red().bold(), format!($($arg)*));
     };
 }
 
@@ -20,15 +20,15 @@ fn main() {
         Ok(content) => content,
         Err(err) => match err.kind() {
             ErrorKind::NotFound => {
-                print_err!("ERRO: Arquivo {} não encontrado!", args.file_path);
+                print_err!("Arquivo {} não encontrado!", args.file_path);
                 process::exit(1);
             }
             ErrorKind::IsADirectory => {
-                print_err!("ERRO: O caminho {} é um diretório!", args.file_path);
+                print_err!("O caminho {} é um diretório!", args.file_path);
                 process::exit(1);
             }
             _ => {
-                print_err!("ERRO: Não foi possível ler o arquivo!");
+                print_err!("Não foi possível ler o arquivo!");
                 process::exit(1);
             }
         },
