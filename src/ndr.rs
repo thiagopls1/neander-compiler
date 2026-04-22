@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub enum NeanderCodeToken {
+pub enum TokenKind {
     ProgramStart,    // PROGRAMA
     ProgramEnd,      // FIM_PROGRAMA
     Comment,         // # Comment
@@ -14,6 +14,21 @@ pub enum NeanderCodeToken {
     Div,             // /
 }
 
+#[derive(Debug)]
+pub struct Token {
+    kind: TokenKind,
+    value: String,
+}
+
+impl Token {
+    pub fn new(value: &str, kind: TokenKind) -> Token {
+        return Token {
+            kind,
+            value: String::from(value),
+        };
+    }
+}
+
 fn is_variable(token: &str) -> bool {
     let mut chars = token.chars();
 
@@ -23,8 +38,8 @@ fn is_variable(token: &str) -> bool {
     }
 }
 
-pub fn tokenize(s: &str) -> Result<Vec<NeanderCodeToken>, ()> {
-    let mut tokens: Vec<NeanderCodeToken> = vec![];
+pub fn tokenize(s: &str) -> Result<Vec<Token>, ()> {
+    let mut tokens: Vec<Token> = vec![];
     let code_lines: Vec<&str> = s.lines().collect();
 
     for line in code_lines {
@@ -37,25 +52,27 @@ pub fn tokenize(s: &str) -> Result<Vec<NeanderCodeToken>, ()> {
             }
 
             match word {
-                "PROGRAMA" => tokens.push(NeanderCodeToken::ProgramStart),
-                "FIM_PROGRAMA" => tokens.push(NeanderCodeToken::ProgramEnd),
+                "PROGRAMA" => tokens.push(Token::new(word, TokenKind::ProgramStart)),
+                "FIM_PROGRAMA" => tokens.push(Token::new(word, TokenKind::ProgramEnd)),
                 "#" => {
-                    tokens.push(NeanderCodeToken::Comment);
+                    tokens.push(Token::new(word, TokenKind::Comment));
                     comment_flag = true;
                 }
-                "VAR" => tokens.push(NeanderCodeToken::DeclareVariable),
-                "=" => tokens.push(NeanderCodeToken::AssignVariable),
-                "+" => tokens.push(NeanderCodeToken::Sum),
-                "-" => tokens.push(NeanderCodeToken::Minus),
-                "*" => tokens.push(NeanderCodeToken::Mult),
-                "/" => tokens.push(NeanderCodeToken::Div),
-                _ if word.parse::<i32>().is_ok() => tokens.push(NeanderCodeToken::Number),
-                _ if is_variable(word) => tokens.push(NeanderCodeToken::Variable),
+                "VAR" => tokens.push(Token::new(word, TokenKind::DeclareVariable)),
+                "=" => tokens.push(Token::new(word, TokenKind::AssignVariable)),
+                "+" => tokens.push(Token::new(word, TokenKind::Sum)),
+                "-" => tokens.push(Token::new(word, TokenKind::Minus)),
+                "*" => tokens.push(Token::new(word, TokenKind::Mult)),
+                "/" => tokens.push(Token::new(word, TokenKind::Div)),
+                _ if word.parse::<i32>().is_ok() => {
+                    tokens.push(Token::new(word, TokenKind::Number))
+                }
+                _ if is_variable(word) => tokens.push(Token::new(word, TokenKind::Variable)),
                 _ => continue,
             }
         }
 
-        tokens.push(NeanderCodeToken::NewLine);
+        tokens.push(Token::new("\n", TokenKind::NewLine));
     }
 
     return Ok(tokens);
