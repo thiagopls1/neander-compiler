@@ -1,4 +1,4 @@
-use super::Token;
+use super::frontend::Token;
 use std::error::Error;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 

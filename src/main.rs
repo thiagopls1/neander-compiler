@@ -1,4 +1,6 @@
+pub mod backend;
 pub mod cli;
+pub mod error;
 pub mod frontend;
 pub mod logging;
 
@@ -59,5 +61,11 @@ fn main() {
     println!("");
     println!("Parser:");
     println!("{:#?}", program);
+
+    log_info!("Construindo assembly...");
+    let assembly = backend::codegen::generate(&program);
+
+    println!("Assembly:");
+    println!("{}", assembly);
     process::exit(0);
 }

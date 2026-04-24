@@ -1,0 +1,12 @@
+pub enum Mnemonic {
+    NOP = 0x0,
+    STA = 0x10,
+    LDA = 0x20,
+    ADD = 0x30,
+    OR = 0x50,
+    AND = 0x60,
+    NOT = 0x70,
+    JMP = 0x80,
+    JZ = 0xA0,
+    HLT = 0xF0,
+}
