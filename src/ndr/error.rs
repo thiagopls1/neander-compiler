@@ -12,7 +12,7 @@ impl Display for NdrError {
     fn fmt(&self, f: &mut Formatter<'_>) -> FmtResult {
         match self {
             Self::UnexpectedToken { token } => {
-                write!(f, "Token inesperado: {}", token.value)
+                write!(f, "Token inesperado: {:?}", token.value)
             }
             Self::UnexpectedEOF => {
                 write!(f, "EOF inesperado.")

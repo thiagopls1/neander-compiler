@@ -14,13 +14,14 @@ pub struct Program {
 #[derive(Debug)]
 pub enum Statement {
     VarDeclare { name: String, value: Expr },
+    VarAssign { name: String, value: Expr },
 }
 
 #[derive(Debug)]
 pub enum Expr {
     Number(i32),
     Variable(String),
-    Binary {
+    Operation {
         left: Box<Expr>,
         op: Operator,
         right: Box<Expr>,
@@ -32,12 +33,6 @@ pub enum Operator {
     Add,
     Sub,
 }
-
-//
-// =======================
-// PARSER
-// =======================
-//
 
 pub struct Parser {
     tokens: Vec<Token>,
@@ -53,11 +48,9 @@ impl Parser {
         self.parse_program()
     }
 
-    //
-    // =======================
-    // CORE
-    // =======================
-    //
+    // ==============
+    // ==== CORE ====
+    // ==============
 
     fn parse_program(&mut self) -> Result<Program, NdrError> {
         self.skip_until(TokenKind::ProgramStart)?;
@@ -86,6 +79,7 @@ impl Parser {
         match self.peek() {
             Some(t) => match t.kind {
                 TokenKind::DeclareVariable => self.parse_var_decl(),
+                TokenKind::Variable => self.parse_var_assign(),
                 _ => Err(NdrError::UnexpectedToken { token: t.clone() }),
             },
             None => Err(NdrError::UnexpectedEOF),
@@ -104,11 +98,19 @@ impl Parser {
         Ok(Statement::VarDeclare { name, value: expr })
     }
 
-    //
-    // =======================
-    // EXPRESSIONS
-    // =======================
-    //
+    fn parse_var_assign(&mut self) -> Result<Statement, NdrError> {
+        let name = self.consume(TokenKind::Variable)?.value;
+
+        self.consume(TokenKind::AssignVariable)?;
+
+        let expr = self.parse_expr()?;
+
+        Ok(Statement::VarAssign { name, value: expr })
+    }
+
+    // ======================
+    // ==== EXPRESSIONS =====
+    // ======================
 
     fn parse_expr(&mut self) -> Result<Expr, NdrError> {
         let mut left = self.parse_term()?;
@@ -124,7 +126,7 @@ impl Parser {
 
             let right = self.parse_term()?;
 
-            left = Expr::Binary {
+            left = Expr::Operation {
                 left: Box::new(left),
                 op,
                 right: Box::new(right),
@@ -151,11 +153,9 @@ impl Parser {
         }
     }
 
-    //
-    // =======================
-    // HELPERS
-    // =======================
-    //
+    // =================
+    // ==== HELPERS ====
+    // =================
 
     fn peek(&self) -> Option<&Token> {
         self.tokens.get(self.current)
