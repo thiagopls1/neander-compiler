@@ -8,6 +8,7 @@ use clap::Parser;
 use cli::Args;
 use colored::*;
 use ndr::lexer;
+use ndr::parser;
 
 fn main() {
     let args = Args::parse();
@@ -40,7 +41,23 @@ fn main() {
         }
     };
 
+    log_info!("Gerando AST...");
+    let mut parser = parser::Parser::new(tokens_vec.clone());
+    let program = match parser.parse() {
+        Ok(ast) => ast,
+        Err(err) => {
+            log_error!("{err}");
+            process::exit(3);
+        }
+    };
+
+    println!("Código:");
     println!("{}", ndr_code);
+    println!("");
+    println!("Tokens:");
     println!("{:?}", tokens_vec);
+    println!("");
+    println!("Parser:");
+    println!("{:#?}", program);
     process::exit(0);
 }

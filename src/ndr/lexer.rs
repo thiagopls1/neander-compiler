@@ -28,8 +28,6 @@ pub fn tokenize(s: &str) -> Result<Vec<Token>, NdrError> {
                 "=" => tokens.push(Token::new(String::from(word), TokenKind::AssignVariable)),
                 "+" => tokens.push(Token::new(String::from(word), TokenKind::Sum)),
                 "-" => tokens.push(Token::new(String::from(word), TokenKind::Minus)),
-                "*" => tokens.push(Token::new(String::from(word), TokenKind::Mult)),
-                "/" => tokens.push(Token::new(String::from(word), TokenKind::Div)),
                 _ if word.parse::<i32>().is_ok() => {
                     tokens.push(Token::new(String::from(word), TokenKind::Number))
                 }

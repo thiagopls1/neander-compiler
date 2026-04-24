@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum TokenKind {
     ProgramStart,    // PROGRAMA
     ProgramEnd,      // FIM_PROGRAMA
@@ -10,12 +10,10 @@ pub enum TokenKind {
     Number,          // 1,2,3,4
     Sum,             // +
     Minus,           // -
-    Mult,            // *
-    Div,             //
     Unknown,         // Unexpected Token
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Token {
     pub kind: TokenKind,
     pub value: String,
