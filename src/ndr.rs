@@ -1,3 +1,7 @@
+use crate::ndr::error::NdrError;
+
+pub mod error;
+
 #[derive(Debug)]
 pub enum TokenKind {
     ProgramStart,    // PROGRAMA
@@ -11,17 +15,18 @@ pub enum TokenKind {
     Sum,             // +
     Minus,           // -
     Mult,            // *
-    Div,             // /
+    Div,             //
+    Unknown,         // Unexpected Token
 }
 
 #[derive(Debug)]
-pub struct Token<'a> {
+pub struct Token {
     kind: TokenKind,
-    value: &'a str,
+    value: String,
 }
 
-impl<'a> Token<'a> {
-    pub fn new(value: &'a str, kind: TokenKind) -> Token<'a> {
+impl Token {
+    pub fn new(value: String, kind: TokenKind) -> Token {
         return Token { kind, value };
     }
 }
@@ -35,32 +40,41 @@ fn is_variable(token: &str) -> bool {
     }
 }
 
-pub fn tokenize(s: &str) -> Result<Vec<Token<'_>>, ()> {
+pub fn tokenize(s: &str) -> Result<Vec<Token>, NdrError> {
     let mut tokens: Vec<Token> = vec![];
     for line in s.lines() {
         for word in line.split_whitespace() {
             match word {
-                "PROGRAMA" => tokens.push(Token::new(word, TokenKind::ProgramStart)),
-                "FIM_PROGRAMA" => tokens.push(Token::new(word, TokenKind::ProgramEnd)),
+                "PROGRAMA" => tokens.push(Token::new(String::from(word), TokenKind::ProgramStart)),
+                "FIM_PROGRAMA" => {
+                    tokens.push(Token::new(String::from(word), TokenKind::ProgramEnd))
+                }
                 "#" => {
-                    tokens.push(Token::new(word, TokenKind::Comment));
+                    tokens.push(Token::new(String::from(word), TokenKind::Comment));
                     break;
                 }
-                "VAR" => tokens.push(Token::new(word, TokenKind::DeclareVariable)),
-                "=" => tokens.push(Token::new(word, TokenKind::AssignVariable)),
-                "+" => tokens.push(Token::new(word, TokenKind::Sum)),
-                "-" => tokens.push(Token::new(word, TokenKind::Minus)),
-                "*" => tokens.push(Token::new(word, TokenKind::Mult)),
-                "/" => tokens.push(Token::new(word, TokenKind::Div)),
+                "VAR" => tokens.push(Token::new(String::from(word), TokenKind::DeclareVariable)),
+                "=" => tokens.push(Token::new(String::from(word), TokenKind::AssignVariable)),
+                "+" => tokens.push(Token::new(String::from(word), TokenKind::Sum)),
+                "-" => tokens.push(Token::new(String::from(word), TokenKind::Minus)),
+                "*" => tokens.push(Token::new(String::from(word), TokenKind::Mult)),
+                "/" => tokens.push(Token::new(String::from(word), TokenKind::Div)),
                 _ if word.parse::<i32>().is_ok() => {
-                    tokens.push(Token::new(word, TokenKind::Number))
+                    tokens.push(Token::new(String::from(word), TokenKind::Number))
                 }
-                _ if is_variable(word) => tokens.push(Token::new(word, TokenKind::Variable)),
-                _ => return Err(()),
+                _ if is_variable(word) => {
+                    tokens.push(Token::new(String::from(word), TokenKind::Variable))
+                }
+                _ => {
+                    let unexpected_token = Token::new(String::from(word), TokenKind::Unknown);
+                    return Err(NdrError::UnexpectedToken {
+                        token: unexpected_token,
+                    });
+                }
             }
         }
 
-        tokens.push(Token::new("\n", TokenKind::NewLine));
+        tokens.push(Token::new(String::from("\n"), TokenKind::NewLine));
     }
 
     Ok(tokens)

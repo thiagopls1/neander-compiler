@@ -1,0 +1,5 @@
+PROGRAMA
+	VAR A = 5
+	VAR 1B = 15
+	VAR R = A + B
+FIM_PROGRAMA
