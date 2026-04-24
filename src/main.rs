@@ -4,6 +4,7 @@ pub mod error;
 pub mod frontend;
 pub mod logging;
 
+use std::path::Path;
 use std::{fs, io::ErrorKind, process};
 
 use clap::Parser;
@@ -67,5 +68,20 @@ fn main() {
 
     println!("Assembly:");
     println!("{}", assembly);
+
+    if args.save_asm {
+        let path = Path::new(&args.file_path);
+
+        if let Some(file_name) = path.file_stem().and_then(|s| s.to_str()) {
+            let output_path = format!("{file_name}.asm");
+
+            if let Err(err) = fs::write(&output_path, assembly) {
+                log_warn!("Erro ao salvar {}: {}", output_path, err);
+            }
+        } else {
+            log_warn!("Não foi possível extrair o nome do arquivo para salvar o .asm");
+        }
+    }
+
     process::exit(0);
 }
