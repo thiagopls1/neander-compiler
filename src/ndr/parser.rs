@@ -162,9 +162,9 @@ impl Parser {
     }
 
     fn advance(&mut self) -> Option<&Token> {
-        let tok = self.tokens.get(self.current);
+        let token = self.tokens.get(self.current);
         self.current += 1;
-        tok
+        token
     }
 
     fn check(&self, kind: &TokenKind) -> bool {
