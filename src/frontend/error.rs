@@ -1,4 +1,4 @@
-use crate::ndr::Token;
+use super::Token;
 use std::error::Error;
 use std::fmt::{Display, Formatter, Result as FmtResult};
 

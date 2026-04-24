@@ -1,14 +1,14 @@
 pub mod cli;
+pub mod frontend;
 pub mod logging;
-pub mod ndr;
 
 use std::{fs, io::ErrorKind, process};
 
 use clap::Parser;
 use cli::Args;
 use colored::*;
-use ndr::lexer;
-use ndr::parser;
+use frontend::lexer;
+use frontend::parser;
 
 fn main() {
     let args = Args::parse();
@@ -55,7 +55,7 @@ fn main() {
     println!("{}", ndr_code);
     println!("");
     println!("Tokens:");
-    println!("{:?}", tokens_vec);
+    println!("{:#?}", tokens_vec);
     println!("");
     println!("Parser:");
     println!("{:#?}", program);
