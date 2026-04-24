@@ -7,6 +7,7 @@ use std::{fs, io::ErrorKind, process};
 use clap::Parser;
 use cli::Args;
 use colored::*;
+use ndr::lexer;
 
 fn main() {
     let args = Args::parse();
@@ -31,7 +32,7 @@ fn main() {
     };
 
     log_info!("Gerando tokens...");
-    let tokens_vec = match ndr::tokenize(&ndr_code) {
+    let tokens_vec = match lexer::tokenize(&ndr_code) {
         Ok(tokens) => tokens,
         Err(err) => {
             log_error!("{err}");
