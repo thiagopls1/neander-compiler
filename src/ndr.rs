@@ -35,7 +35,7 @@ fn is_variable(token: &str) -> bool {
     }
 }
 
-pub fn tokenize(s: &str) -> Result<Vec<Token>, ()> {
+pub fn tokenize(s: &str) -> Result<Vec<Token<'_>>, ()> {
     let mut tokens: Vec<Token> = vec![];
     for line in s.lines() {
         for word in line.split_whitespace() {
