@@ -74,6 +74,7 @@ fn main() {
 
         if let Some(file_name) = path.file_stem().and_then(|s| s.to_str()) {
             let output_path = format!("{file_name}.asm");
+            log_info!("Salvando assembly em {}", output_path);
 
             if let Err(err) = fs::write(&output_path, assembly) {
                 log_warn!("Erro ao salvar {}: {}", output_path, err);

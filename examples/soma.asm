@@ -1,0 +1,16 @@
+.DATA
+	A DATA 5
+	B DATA 15
+	R DATA 0
+
+.TEXT
+.ORG 100
+	LDA [A]
+	ADD [B]
+	STA [R]
+	LDA [A]
+	ADD [B]
+	NOT
+	ADD R
+	STA [R]
+	HLT
