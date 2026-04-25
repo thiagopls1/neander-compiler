@@ -145,7 +145,7 @@ fn build_bytecode(
         })?;
 
         // escreve opcode
-        memory[pc as usize] = mnemonic.clone() as u8;
+        memory[pc as usize] = mnemonic.clone().opcode();
         pc = pc.wrapping_add(1);
 
         // escreve operando

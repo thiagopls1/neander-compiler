@@ -45,7 +45,7 @@ fn main() {
     };
 
     log_info!("Gerando AST...");
-    let mut parser = parser::Parser::new(tokens_vec.clone());
+    let mut parser = parser::Parser::new(tokens_vec);
     let program = match parser.parse() {
         Ok(ast) => ast,
         Err(err) => {
@@ -54,21 +54,8 @@ fn main() {
         }
     };
 
-    println!("Código:");
-    println!("{}", ndr_code);
-    println!("");
-    println!("Tokens:");
-    println!("{:#?}", tokens_vec);
-    println!("");
-    println!("Parser:");
-    println!("{:#?}", program);
-
     log_info!("Construindo assembly...");
     let assembly_src = assembly::generate(&program);
-
-    println!("Assembly:");
-    println!("{}", assembly_src);
-
     if args.save_asm {
         let path = Path::new(&args.file_path);
 
@@ -103,5 +90,6 @@ fn main() {
         }
     }
 
+    log_success!("Feito!");
     process::exit(0);
 }

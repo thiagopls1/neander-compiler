@@ -1,13 +1,14 @@
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub enum Mnemonic {
-    NOP = 0x0,
+    NOP = 0x00,
     STA = 0x10,
     LDA = 0x20,
     ADD = 0x30,
-    OR = 0x50,
-    AND = 0x60,
-    NOT = 0x70,
+    OR = 0x40,
+    AND = 0x50,
+    NOT = 0x60,
     JMP = 0x80,
+    JN = 0x90, // ← estava faltando
     JZ = 0xA0,
     HLT = 0xF0,
 }
@@ -31,13 +32,6 @@ impl Mnemonic {
 
     pub fn opcode(self) -> u8 {
         self as u8
-    }
-
-    pub fn has_operand(self) -> bool {
-        matches!(
-            self,
-            Self::STA | Self::LDA | Self::ADD | Self::OR | Self::AND | Self::JMP | Self::JZ
-        )
     }
 
     pub fn requires_operand(&self) -> bool {

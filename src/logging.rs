@@ -18,3 +18,10 @@ macro_rules! log_info {
         println!("{} {}", "info:".blue().bold(), format_args!($($arg)*));
     };
 }
+
+#[macro_export]
+macro_rules! log_success {
+    ($($arg:tt)*) => {
+        println!("{} {}", "info:".green().bold(), format_args!($($arg)*));
+    };
+}
