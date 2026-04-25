@@ -5,7 +5,7 @@ pub fn generate(program: &Program) -> String {
     let mut text_section = String::new();
 
     data_section.push_str(".DATA\n");
-    text_section.push_str(".TEXT\n.ORG 100\n");
+    text_section.push_str(".TEXT\n.ORG 0\n");
 
     for stmt in &program.statements {
         match stmt {
@@ -62,7 +62,7 @@ fn generate_expr(expr: &Expr, out: &mut String) {
                     Operator::Add => out.push_str(&format!("\tADD [{}]\n", name)),
                     Operator::Sub => {
                         out.push_str(&format!("\tNOT\n"));
-                        out.push_str(&format!("\tADD {}\n", name));
+                        out.push_str(&format!("\tADD [{}]\n", name));
                     }
                 },
                 _ => {

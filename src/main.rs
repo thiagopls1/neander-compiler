@@ -84,10 +84,24 @@ fn main() {
         }
     }
 
-    assembler::build(&assembly_src).map_err(|err| {
-        log_error!("{err}");
-        process::exit(4);
-    });
+    let mem = match assembler::build(&assembly_src) {
+        Ok(mem) => mem,
+        Err(err) => {
+            log_error!("{err}");
+            process::exit(4);
+        }
+    };
+
+    if args.save_mem {
+        let path = Path::new(&args.file_path);
+        if let Some(file_name) = path.file_stem().and_then(|s| s.to_str()) {
+            let output_path = format!("{file_name}.mem");
+            log_info!("Salvando bytecode em {}", output_path);
+            mem.save_to_file(&output_path).unwrap();
+        } else {
+            log_warn!("Não foi possível extrair o nome do arquivo para salvar o .mem");
+        }
+    }
 
     process::exit(0);
 }

@@ -1,3 +1,4 @@
+#[derive(Clone)]
 pub enum Mnemonic {
     NOP = 0x0,
     STA = 0x10,
@@ -37,5 +38,12 @@ impl Mnemonic {
             self,
             Self::STA | Self::LDA | Self::ADD | Self::OR | Self::AND | Self::JMP | Self::JZ
         )
+    }
+
+    pub fn requires_operand(&self) -> bool {
+        match self {
+            Self::NOT | Self::HLT | Self::NOP => false,
+            _ => true,
+        }
     }
 }

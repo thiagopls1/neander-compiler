@@ -2,5 +2,4 @@ PROGRAMA
 	VAR A = 5
 	VAR B = 15
 	VAR R = A + B
-	R = A + B - R
 FIM_PROGRAMA

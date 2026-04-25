@@ -4,12 +4,33 @@ use std::fmt::{Display, Formatter, Result as FmtResult};
 
 #[derive(Debug)]
 pub enum NdrError {
-    UnexpectedToken { token: Token },
+    UnexpectedToken {
+        token: Token,
+    },
     UnexpectedEOF,
-    DuplicateLabel { label: String },
-    InvalidLabelValue { label: String, value: String },
-    UndefinedLabel { label: String },
-    InvalidOperand { operand: String },
+    DuplicateLabel {
+        label: String,
+    },
+    InvalidLabelValue {
+        label: String,
+        value: String,
+    },
+    UndefinedLabel {
+        label: String,
+    },
+    InvalidOperand {
+        operand: String,
+    },
+    InvalidInstruction {
+        instruction: String,
+    },
+    MissingOperand {
+        instruction: String,
+    },
+    UnexpectedOperand {
+        instruction: String,
+        operand: String,
+    },
 }
 
 impl Display for NdrError {
@@ -32,6 +53,22 @@ impl Display for NdrError {
             }
             Self::InvalidOperand { operand } => {
                 write!(f, "Operando inválido: {}", operand)
+            }
+            Self::InvalidInstruction { instruction } => {
+                write!(f, "Instrução inválida: {}", instruction)
+            }
+            Self::MissingOperand { instruction } => {
+                write!(f, "A instrução {} requer um operando", instruction)
+            }
+            Self::UnexpectedOperand {
+                instruction,
+                operand,
+            } => {
+                write!(
+                    f,
+                    "Operando {} inesperado para a instrução {}",
+                    operand, instruction
+                )
             }
         }
     }
