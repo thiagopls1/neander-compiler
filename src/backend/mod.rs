@@ -1,3 +1,3 @@
-pub mod bytecode;
-pub mod codegen;
+pub mod assembler;
+pub mod assembly;
 pub mod runtime;

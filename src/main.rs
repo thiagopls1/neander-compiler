@@ -7,11 +7,11 @@ pub mod logging;
 use std::path::Path;
 use std::{fs, io::ErrorKind, process};
 
+use backend::{assembler, assembly};
 use clap::Parser;
 use cli::Args;
 use colored::*;
-use frontend::lexer;
-use frontend::parser;
+use frontend::{lexer, parser};
 
 fn main() {
     let args = Args::parse();
@@ -64,10 +64,10 @@ fn main() {
     println!("{:#?}", program);
 
     log_info!("Construindo assembly...");
-    let assembly = backend::codegen::generate(&program);
+    let assembly_src = assembly::generate(&program);
 
     println!("Assembly:");
-    println!("{}", assembly);
+    println!("{}", assembly_src);
 
     if args.save_asm {
         let path = Path::new(&args.file_path);
@@ -76,13 +76,18 @@ fn main() {
             let output_path = format!("{file_name}.asm");
             log_info!("Salvando assembly em {}", output_path);
 
-            if let Err(err) = fs::write(&output_path, assembly) {
+            if let Err(err) = fs::write(&output_path, &assembly_src) {
                 log_warn!("Erro ao salvar {}: {}", output_path, err);
             }
         } else {
             log_warn!("Não foi possível extrair o nome do arquivo para salvar o .asm");
         }
     }
+
+    assembler::build(&assembly_src).map_err(|err| {
+        log_error!("{err}");
+        process::exit(4);
+    });
 
     process::exit(0);
 }
