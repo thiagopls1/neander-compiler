@@ -25,7 +25,6 @@ pub fn build(assembly: &str) -> Result<NeanderMemory, NdrError> {
 fn build_labels_table(lines: Lines) -> Result<(LabelsTable, HashMap<u8, u8>), NdrError> {
     let mut labels = LabelsTable::new();
     let mut memory_init = HashMap::new();
-
     let mut data_addr: u8 = 255;
     let mut in_data = false;
 
@@ -78,16 +77,10 @@ fn build_bytecode(
     let mut memory = vec![0u8; 256];
     let mut entry_point: Option<u8> = None;
 
-    // =========================
-    // aplica .DATA
-    // =========================
     for (addr, value) in data_values {
         memory[*addr as usize] = *value;
     }
 
-    // =========================
-    // .TEXT
-    // =========================
     let mut in_text = false;
     let mut pc: u8 = 0;
 
@@ -114,10 +107,11 @@ fn build_bytecode(
             continue;
         }
 
-        // ===== .ORG =====
         if parts[0] == ".ORG" {
             if parts.len() < 2 {
-                return Err(NdrError::UnexpectedEOF);
+                return Err(NdrError::MissingOperand {
+                    instruction: String::from(".ORG"),
+                });
             }
 
             let org = parts[1]
@@ -134,21 +128,21 @@ fn build_bytecode(
             continue;
         }
 
-        // ignora outras diretivas
+        // Ignora outras diretivas
         if parts[0].starts_with('.') {
             continue;
         }
 
-        // ===== instrução =====
         let mnemonic = Mnemonic::from_str(parts[0]).ok_or(NdrError::InvalidInstruction {
             instruction: parts[0].to_string(),
         })?;
 
-        // escreve opcode
+        // Escreve opcode
         memory[pc as usize] = mnemonic.clone().opcode();
+        // Wrapping add para evitar overflow (Caso seja 255, irá para 0)
         pc = pc.wrapping_add(1);
 
-        // escreve operando
+        // Insere operando, caso o operador requere
         if mnemonic.requires_operand() {
             if parts.len() < 2 {
                 return Err(NdrError::MissingOperand {
@@ -162,6 +156,7 @@ fn build_bytecode(
         }
     }
 
+    // Pra caso o .ORG não seja 0 ou não esteja definido
     if let Some(entry) = entry_point {
         if entry != 0 {
             memory[0] = Mnemonic::JMP as u8;
@@ -202,12 +197,10 @@ fn validate_text_section(lines: Lines) -> Result<(), NdrError> {
             continue;
         }
 
-        // ===== valida mnemonic =====
         let mnemonic = Mnemonic::from_str(parts[0]).ok_or(NdrError::InvalidInstruction {
             instruction: parts[0].to_string(),
         })?;
 
-        // ===== valida operandos =====
         if mnemonic.requires_operand() {
             if parts.len() < 2 {
                 return Err(NdrError::MissingOperand {
@@ -230,7 +223,7 @@ fn validate_text_section(lines: Lines) -> Result<(), NdrError> {
 }
 
 fn validate_operand_format(op: &str) -> Result<(), NdrError> {
-    // Rótulo
+    // Tratamento do rótulo
     if op.starts_with('[') && op.ends_with(']') {
         let name = &op[1..op.len() - 1];
 
@@ -243,7 +236,7 @@ fn validate_operand_format(op: &str) -> Result<(), NdrError> {
         return Ok(());
     }
 
-    // Número
+    // Tratamento p/ números
     if op.parse::<u8>().is_ok() {
         return Ok(());
     }
@@ -253,10 +246,10 @@ fn validate_operand_format(op: &str) -> Result<(), NdrError> {
     })
 }
 
-fn resolve_operand(op: &str, table: &LabelsTable) -> Result<u8, NdrError> {
+fn resolve_operand(operand: &str, table: &LabelsTable) -> Result<u8, NdrError> {
     // É um rótulo, então buscamos na tabela
-    if op.starts_with('[') && op.ends_with(']') {
-        let name = &op[1..op.len() - 1];
+    if operand.starts_with('[') && operand.ends_with(']') {
+        let name = &operand[1..operand.len() - 1];
 
         return table.get(name).ok_or(NdrError::UndefinedLabel {
             label: String::from(name),
@@ -264,7 +257,7 @@ fn resolve_operand(op: &str, table: &LabelsTable) -> Result<u8, NdrError> {
     }
 
     // Se não for, validamos se é um u8
-    op.parse::<u8>().map_err(|_| NdrError::InvalidOperand {
-        operand: String::from(op),
+    operand.parse::<u8>().map_err(|_| NdrError::InvalidOperand {
+        operand: String::from(operand),
     })
 }

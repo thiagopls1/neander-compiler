@@ -43,6 +43,7 @@ fn main() {
             process::exit(2);
         }
     };
+    log_success!("Tokens gerados!");
 
     log_info!("Gerando AST...");
     let mut parser = parser::Parser::new(tokens_vec);
@@ -53,6 +54,7 @@ fn main() {
             process::exit(3);
         }
     };
+    log_success!("AST criada!");
 
     log_info!("Construindo assembly...");
     let assembly_src = assembly::generate(&program);
@@ -70,6 +72,7 @@ fn main() {
             log_warn!("Não foi possível extrair o nome do arquivo para salvar o .asm");
         }
     }
+    log_success!("Assembly criado!");
 
     let mem = match assembler::build(&assembly_src) {
         Ok(mem) => mem,
@@ -89,7 +92,7 @@ fn main() {
             log_warn!("Não foi possível extrair o nome do arquivo para salvar o .mem");
         }
     }
-
     log_success!("Feito!");
+
     process::exit(0);
 }

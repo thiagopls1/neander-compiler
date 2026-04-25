@@ -7,8 +7,8 @@ pub fn generate(program: &Program) -> String {
     data_section.push_str(".DATA\n");
     text_section.push_str(".TEXT\n.ORG 0\n");
 
-    for stmt in &program.statements {
-        match stmt {
+    for statement in &program.statements {
+        match statement {
             Statement::VarDeclare { name, value } => {
                 // Inicialização simples
                 match value {
@@ -41,11 +41,9 @@ fn generate_expr(expr: &Expr, out: &mut String) {
         Expr::Number(n) => {
             out.push_str(&format!("\tLDA {}\n", n));
         }
-
         Expr::Variable(name) => {
             out.push_str(&format!("\tLDA [{}]\n", name));
         }
-
         Expr::Operation { left, op, right } => {
             generate_expr(left, out);
             // Faz o "deref", pois está envolvido em um Box
