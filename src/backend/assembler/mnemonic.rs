@@ -1,3 +1,5 @@
+use crate::error::NdrError;
+
 #[derive(Debug, Clone)]
 pub enum Mnemonic {
     NOP = 0x00,
@@ -38,6 +40,23 @@ impl Mnemonic {
         match self {
             Self::NOT | Self::HLT | Self::NOP => false,
             _ => true,
+        }
+    }
+
+    pub fn from_opcode(op: u8) -> Result<Self, NdrError> {
+        match op {
+            0x00 => Ok(Self::NOP),
+            0x10 => Ok(Self::STA),
+            0x20 => Ok(Self::LDA),
+            0x30 => Ok(Self::ADD),
+            0x40 => Ok(Self::OR),
+            0x50 => Ok(Self::AND),
+            0x60 => Ok(Self::NOT),
+            0x80 => Ok(Self::JMP),
+            0x90 => Ok(Self::JN),
+            0xA0 => Ok(Self::JZ),
+            0xF0 => Ok(Self::HLT),
+            _ => Err(NdrError::InvalidOpCode { operation: op }),
         }
     }
 }

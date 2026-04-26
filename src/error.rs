@@ -24,6 +24,9 @@ pub enum NdrError {
     InvalidInstruction {
         instruction: String,
     },
+    InvalidOpCode {
+        operation: u8,
+    },
     MissingOperand {
         instruction: String,
     },
@@ -69,6 +72,9 @@ impl Display for NdrError {
                     "Operando {} inesperado para a instrução {}",
                     operand, instruction
                 )
+            }
+            Self::InvalidOpCode { operation } => {
+                write!(f, "Operação {} inválida", operation)
             }
         }
     }

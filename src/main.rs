@@ -13,6 +13,8 @@ use cli::Args;
 use colored::*;
 use frontend::{lexer, parser};
 
+use crate::backend::emulator::NeanderEmulator;
+
 fn main() {
     let args = Args::parse();
 
@@ -92,7 +94,18 @@ fn main() {
             log_warn!("Não foi possível extrair o nome do arquivo para salvar o .mem");
         }
     }
-    log_success!("Feito!");
 
+    log_info!("Rodando emulador...");
+    let mut emulator = NeanderEmulator::new(mem);
+
+    match emulator.run() {
+        Err(err) => {
+            log_error!("{err}");
+            process::exit(5);
+        }
+        Ok(_) => {}
+    };
+
+    log_success!("Feito! Finalizando...");
     process::exit(0);
 }
