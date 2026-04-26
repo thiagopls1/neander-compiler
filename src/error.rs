@@ -34,6 +34,9 @@ pub enum NdrError {
         instruction: String,
         operand: String,
     },
+    InvalidMemSize {
+        size: usize,
+    },
 }
 
 impl Display for NdrError {
@@ -75,6 +78,9 @@ impl Display for NdrError {
             }
             Self::InvalidOpCode { operation } => {
                 write!(f, "Operação {} inválida", operation)
+            }
+            Self::InvalidMemSize { size } => {
+                write!(f, "Memória deve ter 256 bytes (Recebido: {})", size)
             }
         }
     }

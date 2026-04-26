@@ -25,7 +25,7 @@ impl NeanderEmulator {
 
     pub fn run(&mut self) -> Result<(), NdrError> {
         while !self.halted {
-            self.step().map_err(|err| err)?;
+            self.step()?;
         }
 
         Ok(())

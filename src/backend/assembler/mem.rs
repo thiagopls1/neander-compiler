@@ -1,13 +1,18 @@
 use std::{fs, io};
 
+use crate::error::NdrError;
+
 pub struct NeanderMemory {
     pub data: Vec<u8>, // sempre 256 bytes
 }
 
 impl NeanderMemory {
-    pub fn new(data: Vec<u8>) -> Self {
-        assert!(data.len() == 256, "Memória deve ter 256 bytes");
-        Self { data }
+    pub fn new(data: Vec<u8>) -> Result<Self, NdrError> {
+        if data.len() != 256 {
+            return Err(NdrError::InvalidMemSize { size: data.len() });
+        }
+
+        Ok(Self { data })
     }
 
     pub fn to_bytes(&self) -> Vec<u8> {

@@ -19,7 +19,8 @@ pub fn build(assembly: &str) -> Result<NeanderMemory, NdrError> {
     // Segunda passagem, na qual ocorre a construção do .mem
     let byte_code = build_bytecode(assembly, &labels, &adresses)?;
 
-    Ok(NeanderMemory::new(byte_code))
+    let mem = NeanderMemory::new(byte_code)?;
+    Ok(mem)
 }
 
 fn build_labels_table(lines: Lines) -> Result<(LabelsTable, HashMap<u8, u8>), NdrError> {
