@@ -112,12 +112,11 @@ impl NeanderEmulator {
 
     fn fetch_operand(&mut self) -> u8 {
         let value = self.memory.data[self.pc as usize];
-        let mnemonic = Mnemonic::from_opcode(value).unwrap();
         self.pc = self.pc.wrapping_add(1);
 
         println!(
-            "PC: {:03} | ACC: {:03} | INST: {:?}",
-            self.pc, self.acc, mnemonic
+            "PC: {:03} | ACC: {:03} | VAL.: {:?}",
+            self.pc, self.acc, value
         );
 
         value
